@@ -8,7 +8,7 @@ import com.example.ale.mygame.components.Speed;
 /**
  * Created by ale on 7/24/15.
  */
-public class Duck {
+public class Nest {
     private Bitmap bitmap; // the actual bitmap
     private int x;   // the X coordinate
     private int y;   // the Y coordinate
@@ -17,31 +17,37 @@ public class Duck {
 
     private Speed speed;
 
-    public Duck(Bitmap bitmap, int x, int y) {
+    public Nest(Bitmap bitmap, int x, int y) {
         this.bitmap = bitmap;
         this.x = x;
         this.y = y;
-        speed = new Speed();
+        speed = new Speed(5,5);
     }
 
     public Bitmap getBitmap() {
         return bitmap;
     }
+
     public void setBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
     }
+
     public int getX() {
         return x;
     }
+
     public void setX(int x) {
         this.x = x;
     }
+
     public int getY() {
         return y;
     }
+
     public void setY(int y) {
         this.y = y;
     }
+
     public boolean isTouched() {
         return touched;
     }
@@ -55,7 +61,7 @@ public class Duck {
     }
 
     public void handleActionDown(int eventX, int eventY) {
-        if (eventX >= (x - bitmap.getWidth() / 2) && (eventX <= (x + bitmap.getWidth()/2))) {
+        if (eventX >= (x - bitmap.getWidth() / 2) && (eventX <= (x + bitmap.getWidth() / 2))) {
             if (eventY >= (y - bitmap.getHeight() / 2) && (y <= (y + bitmap.getHeight() / 2))) {
                 // droid touched
                 setTouched(true);
@@ -71,10 +77,11 @@ public class Duck {
     public Speed getSpeed() {
         return speed;
     }
+
     public void update() {
         if (!touched) {
             x += (speed.getXv() * speed.getxDirection());
-            y += (speed.getYv() * speed.getyDirection());
+            //y += (speed.getYv() * speed.getyDirection());
         }
     }
 }

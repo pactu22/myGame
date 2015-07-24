@@ -10,7 +10,9 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.example.ale.mygame.components.Speed;
 import com.example.ale.mygame.model.Duck;
+import com.example.ale.mygame.model.Nest;
 
 /**
  * Created by ale on 7/24/15.
@@ -20,6 +22,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
     private static final String TAG = DrawingPanel.class.getSimpleName();
     private MainThread thread;
     private Duck duck;
+    private Nest nest;
 
 
 
@@ -29,8 +32,10 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
         getHolder().addCallback(this);
 
         // create droid and load bitmap
-        duck = new Duck(BitmapFactory.decodeResource(getResources(), R.drawable.duck), 50, 50);
+        duck = new Duck(BitmapFactory.decodeResource(getResources(), R.drawable.duck), 400, 1000);
         // create the game loop thread
+        nest = new Nest(BitmapFactory.decodeResource(getResources(), R.drawable.nido), 100, 100);
+
         thread = new MainThread(getHolder(), this);
 
     // make the GamePanel focusable so it can handle events
@@ -68,11 +73,14 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
     @Override
     protected void onDraw(Canvas canvas) {
         //draws the duck image to the coordinates 10,10
-        //canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.duck), 10, 10, null);
         // fills the canvas with black
         canvas.drawColor(Color.BLACK);
+
+        //canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.nido), 10, 10, null);
+        nest.draw(canvas);
         duck.draw(canvas);
     }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -103,4 +111,28 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
         return true;
     }
 
+    public void update() {
+        // check collision with right wall if heading right
+        if (nest.getSpeed().getxDirection() == Speed.DIRECTION_RIGHT
+                && nest.getX() + nest.getBitmap().getWidth() / 2 >= getWidth()) {
+            nest.getSpeed().toggleXDirection();
+        }
+        // check collision with left wall if heading left
+        if (nest.getSpeed().getxDirection() == Speed.DIRECTION_LEFT
+                && nest.getX() - nest.getBitmap().getWidth() / 2 <= 0) {
+            nest.getSpeed().toggleXDirection();
+        }
+        // check collision with bottom wall if heading down
+        if (nest.getSpeed().getyDirection() == Speed.DIRECTION_DOWN
+                && nest.getY() + nest.getBitmap().getHeight() / 2 >= getHeight()) {
+            nest.getSpeed().toggleYDirection();
+        }
+        // check collision with top wall if heading up
+        if (nest.getSpeed().getyDirection() == Speed.DIRECTION_UP
+                && nest.getY() - nest.getBitmap().getHeight() / 2 <= 0) {
+            nest.getSpeed().toggleYDirection();
+        }
+        // Update the lone droid
+        nest.update();
+    }
 }

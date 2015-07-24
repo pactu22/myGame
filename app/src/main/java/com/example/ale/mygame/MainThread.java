@@ -30,7 +30,6 @@ public class MainThread extends Thread {
     @Override
     public void run() {
         Canvas canvas;
-
         //long tickCount = 0L;
         Log.d(TAG, "Starting game loop");
 
@@ -39,6 +38,8 @@ public class MainThread extends Thread {
             try {
                 canvas = this.surfaceHolder.lockCanvas();
                 synchronized (surfaceHolder) {
+                    // update game state
+                    this.gamePanel.update(); //move "randomly"
                     gamePanel.onDraw(canvas);
                 }
             } finally {
