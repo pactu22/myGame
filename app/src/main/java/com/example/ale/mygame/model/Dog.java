@@ -1,15 +1,19 @@
 package com.example.ale.mygame.model;
 
-import android.graphics.Rect;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.util.Log;
 
 import com.example.ale.mygame.components.Speed;
 
 /**
- * Created by ale on 7/24/15.
+ * Created by ale on 7/27/15.
  */
-public class Duck {
+public class Dog {
+
+    private static final String TAG = Dog.class.getSimpleName();
+
     private Bitmap bitmap; // the actual bitmap
     private int x;   // the X coordinate
     private int y;   // the Y coordinate
@@ -19,17 +23,23 @@ public class Duck {
 
     private Speed speed;
 
-    public Duck(Bitmap bitmap, int x, int y) {
+    public Dog(Bitmap bitmap, int x, int y) {
         this.bitmap = bitmap;
         this.x = x;
         this.y = y;
-        speed = new Speed();
-
         rectangle = new Rect(getLeftX(), getTopY(),getRightX(), getBottomY());
 
+        int range = (8 - 2) + 1;
+
+        int randomX = (int)(Math.random() * range) + 2;
+        int randomY = (int)(Math.random() * range) + 2;
+        Log.d(TAG, "Random x: " + randomX);
+        Log.d(TAG, "Random y: " + randomY);
+        speed = new Speed(randomX,randomY);
     }
+
     private int getTopY(){
-       return  y - (bitmap.getHeight() / 2);
+        return  y - (bitmap.getHeight() / 2);
     }
     private int getBottomY(){
         return  y + (bitmap.getHeight() /2);
@@ -68,9 +78,8 @@ public class Duck {
     }
 
     public void draw(Canvas canvas) {
-        rectangle = new Rect(getLeftX(), getTopY(),getRightX(), getBottomY());
         canvas.drawBitmap(bitmap, x - (bitmap.getWidth() / 2), y - (bitmap.getHeight() / 2), null);
-
+        rectangle = new Rect(getLeftX(), getTopY(),getRightX(), getBottomY());
     }
 
     public void handleActionDown(int eventX, int eventY) {
@@ -94,6 +103,7 @@ public class Duck {
         if (!touched) {
             x += (speed.getXv() * speed.getxDirection());
             y += (speed.getYv() * speed.getyDirection());
+            rectangle = new Rect(getLeftX(), getTopY(),getRightX(), getBottomY());
         }
     }
     public Rect getRectangle(){

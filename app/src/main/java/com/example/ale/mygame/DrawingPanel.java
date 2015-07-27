@@ -11,8 +11,12 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.example.ale.mygame.components.Speed;
+import com.example.ale.mygame.model.Dog;
 import com.example.ale.mygame.model.Duck;
 import com.example.ale.mygame.model.Nest;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by ale on 7/24/15.
@@ -23,6 +27,8 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
     private MainThread thread;
     private Duck duck;
     private Nest nest;
+    private Dog dog;
+    private List<Dog> dogs;
 
 
 
@@ -30,16 +36,26 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
         super(context);
         // adding the callback (this) to the surface holder to intercept events
         getHolder().addCallback(this);
+        // make the GamePanel focusable so it can handle events
+        setFocusable(true);
 
-        // create droid and load bitmap
-        duck = new Duck(BitmapFactory.decodeResource(getResources(), R.drawable.duck), 400, 1000);
+        // create the imges
+        duck = new Duck(BitmapFactory.decodeResource(getResources(), R.drawable.duckk), 400, 1000);
+
+        nest = new Nest(BitmapFactory.decodeResource(getResources(), R.drawable.rainbow), 100, 100);
+
+        dog = new Dog(BitmapFactory.decodeResource(getResources(), R.drawable.lion), 250,350);
+
+        dogs = new ArrayList<Dog>();
+        dogs.add(dog);
+        for(int i = 1; i <= 3; ++i){
+            dog = new Dog(BitmapFactory.decodeResource(getResources(), R.drawable.lion), 250,350);
+            dogs.add(dog);
+        }
+
         // create the game loop thread
-        nest = new Nest(BitmapFactory.decodeResource(getResources(), R.drawable.nido), 100, 100);
-
         thread = new MainThread(getHolder(), this);
 
-    // make the GamePanel focusable so it can handle events
-        setFocusable(true);
 
     }
     @Override
@@ -72,13 +88,22 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
 
     @Override
     protected void onDraw(Canvas canvas) {
-        //draws the duck image to the coordinates 10,10
+
         // fills the canvas with black
         canvas.drawColor(Color.BLACK);
 
+        //draws the duck image to the coordinates 10,10
         //canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.nido), 10, 10, null);
+
         nest.draw(canvas);
         duck.draw(canvas);
+        for(Dog dog: dogs) {
+
+            dog.draw(canvas);
+        }
+        //Log.d(VIEW_LOG_TAG, "NEST: " + nest.getY());
+        //Log.d(VIEW_LOG_TAG, "NEST: " + duck.getY());
+
     }
 
 
@@ -90,8 +115,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
 
             // check if in the lower part of the screen we exit
             if (event.getY() > getHeight() - 50) {
-                thread.setRunning(false);
-                ((Activity)getContext()).finish();
+                finishGame();
             } else {
                 Log.d(TAG, "Coords: x=" + event.getX() + ",y=" + event.getY());
             }
@@ -111,7 +135,25 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
         return true;
     }
 
-    public void update() {
+    public void checkCollission(){
+     
+        for(Dog dog: dogs) {
+            if (duck.getRectangle().intersect(dog.getRectangle())) {
+                Log.d(TAG, "**COLLISION********");
+                finishGame();
+
+
+            }
+        }
+
+    }
+    private void finishGame(){
+        thread.setRunning(false);
+
+        ((Activity)getContext()).finish();
+    }
+
+    public void updateNest() {
         // check collision with right wall if heading right
         if (nest.getSpeed().getxDirection() == Speed.DIRECTION_RIGHT
                 && nest.getX() + nest.getBitmap().getWidth() / 2 >= getWidth()) {
@@ -134,5 +176,33 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
         }
         // Update the lone droid
         nest.update();
+    }
+
+    public void updateDogs() {
+        for(Dog dog: dogs){
+
+            // check collision with right wall if heading right
+            if (dog.getSpeed().getxDirection() == Speed.DIRECTION_RIGHT
+                    && dog.getX() + dog.getBitmap().getWidth() / 2 >= getWidth()) {
+                dog.getSpeed().toggleXDirection();
+            }
+            // check collision with left wall if heading left
+            if (dog.getSpeed().getxDirection() == Speed.DIRECTION_LEFT
+                    && dog.getX() - dog.getBitmap().getWidth() / 2 <= 0) {
+                dog.getSpeed().toggleXDirection();
+            }
+            // check collision with bottom wall if heading down
+            if (dog.getSpeed().getyDirection() == Speed.DIRECTION_DOWN
+                    && dog.getY() + dog.getBitmap().getHeight() / 2 >= getHeight()) {
+                dog.getSpeed().toggleYDirection();
+            }
+            // check collision with top wall if heading up
+            if (dog.getSpeed().getyDirection() == Speed.DIRECTION_UP
+                    && dog.getY() - (dog.getBitmap().getHeight()/2)  <= nest.getY() + nest.getBitmap().getHeight()/2) {
+                dog.getSpeed().toggleYDirection();
+            }
+            // Update the lone droid
+            dog.update();
+        }
     }
 }
