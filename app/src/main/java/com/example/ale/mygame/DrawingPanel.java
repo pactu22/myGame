@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -14,7 +15,6 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.example.ale.mygame.components.Speed;
 import com.example.ale.mygame.model.Dog;
@@ -287,12 +287,16 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
 
     public void open(){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
-        alertDialogBuilder.setMessage("You have lost! Do you want to play again?" );
+        alertDialogBuilder.setMessage("Do you want to play again?" );
+        alertDialogBuilder.setTitle("You have lost! ");
+        alertDialogBuilder.setIcon(R.drawable.sad);
+
 
         alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface arg0, int arg1) {
-                Toast.makeText(getContext(), "You clicked yes button", Toast.LENGTH_LONG).show();
+                Intent intentGame = new Intent(getContext(), DroidzActivity.class);
+                getContext().startActivity(intentGame);
             }
         });
 

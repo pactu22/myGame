@@ -39,6 +39,7 @@ public class DroidzActivity extends Activity implements SensorEventListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "On create...");
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
 
@@ -93,6 +94,15 @@ public class DroidzActivity extends Activity implements SensorEventListener {
         super.onStop();
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        dp = new DrawingPanel(this);
+        dp.setDa(this);
+        // set our MainGamePanel as the View
+        setContentView(dp);
+
+    }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
