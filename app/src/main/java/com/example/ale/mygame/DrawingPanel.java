@@ -64,7 +64,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
         setFocusable(true);
 
         // create the imges
-        duck = new Duck(BitmapFactory.decodeResource(getResources(), R.drawable.duckk),
+        duck = new Duck(BitmapFactory.decodeResource(getResources(), R.drawable.duck1),
                 ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getWidth()/2,
                 ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getHeight()/2);
 
@@ -289,6 +289,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
         alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface arg0, int arg1) {
+                finishGame();
                 Intent intentGame = new Intent(getContext(), DroidzActivity.class);
                 getContext().startActivity(intentGame);
             }

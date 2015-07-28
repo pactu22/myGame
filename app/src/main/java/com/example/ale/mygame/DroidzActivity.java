@@ -1,7 +1,10 @@
 package com.example.ale.mygame;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -10,6 +13,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -101,6 +105,42 @@ public class DroidzActivity extends Activity implements SensorEventListener {
         // set our MainGamePanel as the View
         setContentView(dp);
 
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+           Log.d(TAG, "BACK BUTTON");
+                modalWindow();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private void modalWindow() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("Are you sure you want to finish the game");
+        alertDialogBuilder.setTitle("Finish");
+        alertDialogBuilder.setIcon(R.drawable.sad);
+
+
+        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+
+                Intent intentGame = new Intent(getBaseContext(), MainActivity.class);
+                startActivity(intentGame);
+            }
+        });
+
+        alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              //TODO
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     @Override
