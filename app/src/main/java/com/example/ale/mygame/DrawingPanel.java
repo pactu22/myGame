@@ -75,11 +75,11 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
 
         dogs = new ArrayList<Dog>();
         dogs.add(dog);
-        /*
-        for(int i = 1; i <= 3; ++i){
+
+        for(int i = 1; i <= 2; ++i){
             dog = new Dog(BitmapFactory.decodeResource(getResources(), R.drawable.lion), 250,350);
             dogs.add(dog);
-        }*/
+        }
 
         // create the game loop thread
         thread = new MainThread(getHolder(), this);
@@ -193,37 +193,22 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
         return true;
     }
 
-    public void checkCollission(){
+    public void checkCollision(){
+
 
         for(Dog dog: dogs) {
+            if (duck.getRectangle().intersect(nest.getRectangle())) {
+                collisionMsg(false);
+            }
             if (duck.getRectangle().intersect(dog.getRectangle())) {
-                collisionMsg();
+                collisionMsg(true);
             }
         }
     }
-    Handler handler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-           open();
-            return false;
-        }
-    });
 
     private void finishGame(){
         thread.setRunning(false);
         ((Activity)getContext()).finish();
-    }
-    private void collisionMsg(){
-        thread.setRunning(false);
-        final Message msg = new Message();
-        new Thread()
-        {
-            public void run()
-            {
-                msg.arg1=1;
-                handler.sendMessage(msg);
-            }
-        }.start();
     }
 
     public void updateNest() {
@@ -285,10 +270,19 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
         duck.setY(mYCenter);
     }
 
-    public void open(){
+    public void open(boolean won){
+        String msg, title = null;
+        if(won) {
+            title = "Congrats!!";
+            msg = "Do you want to continue to another level?";
+        }
+        else{
+            title = "You have lost! ";
+            msg = "Do you want to play again?" ;
+        }
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
-        alertDialogBuilder.setMessage("Do you want to play again?" );
-        alertDialogBuilder.setTitle("You have lost! ");
+        alertDialogBuilder.setMessage(msg);
+        alertDialogBuilder.setTitle(title);
         alertDialogBuilder.setIcon(R.drawable.sad);
 
 
@@ -311,6 +305,41 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
         alertDialog.show();
     }
 
+    Handler handler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            if(msg.arg1 == 1){
+                //game lost
+                open(false);
+            }
+            else{
+                //game won
+                open(true);
+            }
+
+            return false;
+        }
+    });
+    private void collisionMsg(final boolean lost){
+        thread.setRunning(false);
+        final Message msg = new Message();
+
+        new Thread()
+        {
+            public void run()
+            {
+                if(lost){
+                    msg.arg1=1;
+                    handler.sendMessage(msg);
+                }
+                else{
+                    msg.arg1=2;
+                    handler.sendMessage(msg);
+                }
+
+            }
+        }.start();
+    }
 
 
 

@@ -63,7 +63,6 @@ public class DroidzActivity extends Activity implements SensorEventListener {
         // set our MainGamePanel as the View
         setContentView(dp);
 
-
         Log.d(TAG, "View added");
 
     }

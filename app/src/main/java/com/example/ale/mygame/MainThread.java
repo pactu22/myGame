@@ -44,12 +44,12 @@ public class MainThread extends Thread {
                 canvas = this.surfaceHolder.lockCanvas();
                 synchronized (surfaceHolder) {
                     // update game state
-                    this.gamePanel.updateNest(); //move "randomly"
-                    this.gamePanel.updateDogs();
+                    gamePanel.updateNest(); //move "randomly"
+                    gamePanel.updateDogs();
                     gamePanel.updateDuck();
 
                     gamePanel.onDraw(canvas);
-                    gamePanel.checkCollission();
+                    gamePanel.checkCollision();
                 }
             } finally {
                 // in case of an exception the surface is not left in
