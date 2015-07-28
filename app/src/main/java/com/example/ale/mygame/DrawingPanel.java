@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.Log;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -32,7 +31,21 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
     private Dog dog;
     private List<Dog> dogs;
 
-    private Display mDisplay;
+
+    private final float FACTOR_BOUNCEBACK = 0.50f;
+    private float mVx;
+    private float mVy;
+    private int mXCenter;
+    private int mYCenter;
+    private final int RADIUS = 50;
+
+
+
+    public void setDa(DroidzActivity da) {
+        this.ma = da;
+    }
+
+    private DroidzActivity ma;
 
     public DrawingPanel(Context context) {
         super(context);
@@ -41,16 +54,17 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
 
 
         WindowManager mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        mDisplay = mWindowManager.getDefaultDisplay();
-        Log.d(TAG, " SCREEN Width: " + mDisplay.getWidth());
-        Log.d(TAG, " : SCREEN Height" + mDisplay.getHeight());
+
         // make the GamePanel focusable so it can handle events
         setFocusable(true);
 
         // create the imges
-        duck = new Duck(BitmapFactory.decodeResource(getResources(), R.drawable.duckk), mDisplay.getWidth()/2, mDisplay.getHeight()/2);
+        duck = new Duck(BitmapFactory.decodeResource(getResources(), R.drawable.duckk),
+                ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getWidth()/2,
+                ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getHeight()/2);
 
-        nest = new Nest(BitmapFactory.decodeResource(getResources(), R.drawable.rainbow), mDisplay.getWidth()/2, 150);
+        nest = new Nest(BitmapFactory.decodeResource(getResources(), R.drawable.rainbow),
+                ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getWidth()/2, 150);
 
         dog = new Dog(BitmapFactory.decodeResource(getResources(), R.drawable.lion), 250,350);
 
@@ -66,10 +80,44 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
         thread = new MainThread(getHolder(), this);
 
     }
+    public boolean updateOvalCenter()
+    {
+
+        mVx -= ma.getmAx() * ma.getmDeltaT();
+        mVy += ma.getmAy() * ma.getmDeltaT();
+
+        mXCenter += (int)(ma.getmDeltaT() * (mVx + 0.5 * ma.getmAx() * ma.getmDeltaT()));
+        mYCenter += (int)(ma.getmDeltaT()* (mVy + 0.5 * ma.getmAy() * ma.getmDeltaT()));
+
+        if(mXCenter < RADIUS)
+        {
+            mXCenter = RADIUS;
+            mVx = -mVx * FACTOR_BOUNCEBACK;
+        }
+
+        if(mYCenter < RADIUS)  {
+            mYCenter = RADIUS;
+            mVy = -mVy * FACTOR_BOUNCEBACK;
+        }
+
+        if(mXCenter > ma.getmWidthScreen() - RADIUS) {
+            mXCenter = ma.getmWidthScreen() - RADIUS;
+            mVx = -mVx * FACTOR_BOUNCEBACK;
+        }
+
+        if(mYCenter > ma.getmHeightScreen() - 2 * RADIUS) {
+            mYCenter = ma.getmHeightScreen() - 2 * RADIUS;
+            mVy = -mVy * FACTOR_BOUNCEBACK;
+        }
+
+        return true;
+    }
+
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         // at this point the surface is created and
         // we can safely start the game loop
+
         thread.setRunning(true);
         thread.start();
     }
@@ -102,6 +150,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
         //canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.nido), 10, 10, null);
 
         nest.draw(canvas);
+        updateDuck();
         duck.draw(canvas);
         for(Dog dog: dogs) {
 
@@ -212,8 +261,10 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
 
     public void updateDuck(){
 
-        //duck.updatePosition(mSensorX, mSensorY, mSensorZ, mSensorTimeStamp);
+        duck.setX(mXCenter);
+        duck.setY(mYCenter);
     }
+
 
 
 }

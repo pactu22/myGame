@@ -38,6 +38,7 @@ public class MainThread extends Thread {
         Log.d(TAG, "Starting game loop");
 
         while (running) {
+            gamePanel.updateOvalCenter();
             canvas = null;
             try {
                 canvas = this.surfaceHolder.lockCanvas();
