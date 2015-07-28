@@ -1,15 +1,20 @@
 package com.example.ale.mygame;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.example.ale.mygame.components.Speed;
 import com.example.ale.mygame.model.Dog;
@@ -150,7 +155,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
         //canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.nido), 10, 10, null);
 
         nest.draw(canvas);
-        updateDuck();
+
         duck.draw(canvas);
         for(Dog dog: dogs) {
 
@@ -192,18 +197,33 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
 
         for(Dog dog: dogs) {
             if (duck.getRectangle().intersect(dog.getRectangle())) {
-                Log.d(TAG, "**COLLISION********");
-                finishGame();
-
-
+                collisionMsg();
             }
         }
-
     }
+    Handler handler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+           open();
+            return false;
+        }
+    });
+
     private void finishGame(){
         thread.setRunning(false);
-
         ((Activity)getContext()).finish();
+    }
+    private void collisionMsg(){
+        thread.setRunning(false);
+        final Message msg = new Message();
+        new Thread()
+        {
+            public void run()
+            {
+                msg.arg1=1;
+                handler.sendMessage(msg);
+            }
+        }.start();
     }
 
     public void updateNest() {
@@ -264,6 +284,29 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
         duck.setX(mXCenter);
         duck.setY(mYCenter);
     }
+
+    public void open(){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+        alertDialogBuilder.setMessage("You have lost! Do you want to play again?" );
+
+        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                Toast.makeText(getContext(), "You clicked yes button", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finishGame();
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
 
 
 

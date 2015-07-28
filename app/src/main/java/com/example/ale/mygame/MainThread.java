@@ -46,7 +46,7 @@ public class MainThread extends Thread {
                     // update game state
                     this.gamePanel.updateNest(); //move "randomly"
                     this.gamePanel.updateDogs();
-                    //gamePanel.updateDuck();
+                    gamePanel.updateDuck();
 
                     gamePanel.onDraw(canvas);
                     gamePanel.checkCollission();
