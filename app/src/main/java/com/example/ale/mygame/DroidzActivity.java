@@ -33,25 +33,17 @@ public class DroidzActivity extends Activity  {
     @Override
     protected void onPause() {
         super.onPause();
-        dp.stopSimulation();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        dp.startSimulation();
-
-
-
     }
 
     @Override
     protected void onDestroy() {
-
-
         Log.d(TAG, "Destroying...");
         super.onDestroy();
-
     }
 
     @Override

@@ -5,14 +5,9 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
@@ -28,7 +23,7 @@ import java.util.List;
 /**
  * Created by ale on 7/24/15.
  */
-public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback, SensorEventListener {
+public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback {
 
     private static final String TAG = DrawingPanel.class.getSimpleName();
     private MainThread thread;
@@ -37,8 +32,6 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback,
     private Dog dog;
     private List<Dog> dogs;
 
-    private SensorManager mSensorManager;
-    private Sensor mAccelerometer;
     private Display mDisplay;
 
     public DrawingPanel(Context context) {
@@ -63,29 +56,22 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback,
 
         dogs = new ArrayList<Dog>();
         dogs.add(dog);
+        /*
         for(int i = 1; i <= 3; ++i){
             dog = new Dog(BitmapFactory.decodeResource(getResources(), R.drawable.lion), 250,350);
             dogs.add(dog);
-        }
+        }*/
 
         // create the game loop thread
         thread = new MainThread(getHolder(), this);
-        // Get a reference to a SensorManager
-
-
-        mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-
 
     }
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         // at this point the surface is created and
         // we can safely start the game loop
-
         thread.setRunning(true);
         thread.start();
-
     }
 
     @Override
@@ -121,8 +107,6 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback,
 
             dog.draw(canvas);
         }
-        //Log.d(VIEW_LOG_TAG, "NEST: " + nest.getY());
-        //Log.d(VIEW_LOG_TAG, "NEST: " + duck.getY());
 
     }
 
@@ -227,59 +211,9 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback,
     }
 
     public void updateDuck(){
-        duck.updatePosition(mSensorX, mSensorY, mSensorZ, mSensorTimeStamp);
+
+        //duck.updatePosition(mSensorX, mSensorY, mSensorZ, mSensorTimeStamp);
     }
 
-    private float mSensorX;
-    private float mSensorY;
-    private float mSensorZ;
-    private long mSensorTimeStamp;
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-
-        if (event.sensor.getType() != Sensor.TYPE_ACCELEROMETER)
-            return;
-        //Log.d(TAG, "On sensor changed ");
-        switch (mDisplay.getRotation()) {
-
-            case Surface.ROTATION_0:
-                mSensorX = event.values[0];
-                mSensorY = event.values[1];
-                Log.d(TAG, "Sensor x " + mSensorX + "  - Sensor y "+mSensorY);
-                break;
-            case Surface.ROTATION_90:
-                mSensorX = -event.values[1];
-                mSensorY = event.values[0];
-                Log.d(TAG, "Rotation 90  ");
-                break;
-            case Surface.ROTATION_180:
-                mSensorX = -event.values[0];
-                mSensorY = -event.values[1];
-               Log.d(TAG, "Rotation 180  ");
-                break;
-            case Surface.ROTATION_270:
-                mSensorX = event.values[1];
-                mSensorY = -event.values[0];
-                Log.d(TAG, "Rotation 270  ");
-                break;
-        }
-        mSensorZ = event.values[2];
-        mSensorTimeStamp = event.timestamp;
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
-    public void startSimulation() {
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
-        Log.d(TAG, "Starting simultion..");
-    }
-
-    public void stopSimulation() {
-        mSensorManager.unregisterListener(this);
-        Log.d(TAG, "Stoping simultion..");
-    }
 
 }
