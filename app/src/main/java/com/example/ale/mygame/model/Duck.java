@@ -1,8 +1,9 @@
 package com.example.ale.mygame.model;
 
-import android.graphics.Rect;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.util.Log;
 
 import com.example.ale.mygame.components.Speed;
 
@@ -96,6 +97,21 @@ public class Duck {
             y += (speed.getYv() * speed.getyDirection());
         }
     }
+    public void updatePosition(float sx, float sy, float sz, long timestamp) {
+        float dt = (System.nanoTime() - timestamp) / 1000000000.0f;
+
+        speed.setXv(speed.getXv() + ( -sx * dt));
+        speed.setYv(speed.getYv() + (-sy * dt));
+        //mVelX += -sx * dt;
+       // mVelY += -sy * dt;
+        x += speed.getXv()*dt;
+        y += speed.getYv()*dt;
+        Log.d("UPD", "UPDATING X" + x);
+        Log.d("UPD", "UPDATING Y" + y);
+        //mPosX += mVelX * dt;
+        //mPosY += mVelY * dt;
+    }
+
     public Rect getRectangle(){
         return rectangle;
     }

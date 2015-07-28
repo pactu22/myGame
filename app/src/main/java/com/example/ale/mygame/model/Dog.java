@@ -3,7 +3,6 @@ package com.example.ale.mygame.model;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.util.Log;
 
 import com.example.ale.mygame.components.Speed;
 
@@ -33,8 +32,8 @@ public class Dog {
 
         int randomX = (int)(Math.random() * range) + 2;
         int randomY = (int)(Math.random() * range) + 2;
-        Log.d(TAG, "Random x: " + randomX);
-        Log.d(TAG, "Random y: " + randomY);
+       // Log.d(TAG, "Random x: " + randomX);
+        //Log.d(TAG, "Random y: " + randomY);
         speed = new Speed(randomX,randomY);
     }
 

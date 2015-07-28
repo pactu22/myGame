@@ -1,5 +1,6 @@
 package com.example.ale.mygame;
 
+import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -13,6 +14,7 @@ public class MainThread extends Thread {
 
     private SurfaceHolder surfaceHolder;
     private DrawingPanel gamePanel;
+
     // flag to hold game state
     private boolean running;
 
@@ -20,6 +22,7 @@ public class MainThread extends Thread {
         super();
         this.surfaceHolder = surfaceHolder;
         this.gamePanel = gamePanel;
+
     }
 
 
@@ -27,6 +30,7 @@ public class MainThread extends Thread {
         this.running = running;
     }
 
+    @SuppressLint("WrongCall")
     @Override
     public void run() {
         Canvas canvas;
@@ -41,6 +45,8 @@ public class MainThread extends Thread {
                     // update game state
                     this.gamePanel.updateNest(); //move "randomly"
                     this.gamePanel.updateDogs();
+                    //gamePanel.updateDuck();
+
                     gamePanel.onDraw(canvas);
                     gamePanel.checkCollission();
                 }
@@ -60,4 +66,5 @@ public class MainThread extends Thread {
 
         }
     }
+
 }
