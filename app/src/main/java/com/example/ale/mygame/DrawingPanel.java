@@ -64,20 +64,25 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
         setFocusable(true);
 
         // create the imges
-        duck = new Duck(BitmapFactory.decodeResource(getResources(), R.drawable.duck1),
-                ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getWidth()/2,
-                ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getHeight()/2);
+        int heightScreen = ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getHeight();
+        int widthScreen = ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getWidth();
+        Log.d("HEIGHT: " , String.valueOf(heightScreen));
+        duck = new Duck(BitmapFactory.decodeResource(getResources(), R.drawable.penguin1),
+                widthScreen/2,
+                1200);
+        Log.d("Y: " , String.valueOf(duck.getY()));
+        //duck.setY(heightScreen-duck.getBitmap().getHeight()-100);
 
         nest = new Nest(BitmapFactory.decodeResource(getResources(), R.drawable.rainbow),
-                ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getWidth()/2, 150);
+                widthScreen/2, 150);
 
-        dog = new Dog(BitmapFactory.decodeResource(getResources(), R.drawable.lion), ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getWidth()/2,350);
+        dog = new Dog(BitmapFactory.decodeResource(getResources(), R.drawable.bomb), widthScreen/2,350);
 
         dogs = new ArrayList<Dog>();
         dogs.add(dog);
 
         for(int i = 1; i <= 2; ++i){
-            dog = new Dog(BitmapFactory.decodeResource(getResources(), R.drawable.lion), 250,350);
+            dog = new Dog(BitmapFactory.decodeResource(getResources(), R.drawable.bomb), 250,350);
             dogs.add(dog);
         }
 
@@ -239,35 +244,36 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
     public void updateDogs() {
 
         for(Dog dog: dogs){
+           /*
             Log.d("COORDINATE: " , " X: " + dog.getX() + " Y: " + dog.getY() +
                     " ---- DIF: " + (dog.getX() - dog.getBitmap().getWidth() / 2) +
                             "DIRECTION: " + dog.getSpeed().getxDirection() +
                             "DOVEL ::" + dog.getSpeed().getXv()
 
-            );
+            );*/
             // check collision with left wall if heading left
             if (dog.getSpeed().getxDirection() == Speed.DIRECTION_LEFT
                     && dog.getX() - dog.getBitmap().getWidth() / 2 <= 0) {
-                Log.d(TAG, "LEFT");
+                //Log.d(TAG, "LEFT");
                 dog.getSpeed().toggleXDirection();
             }
             // check collision with right wall if heading right
             else if (dog.getSpeed().getxDirection() == Speed.DIRECTION_RIGHT
                     && dog.getX() + dog.getBitmap().getWidth() / 2 >= getWidth()) {
-                Log.d(TAG, "RIGHT");
+                //Log.d(TAG, "RIGHT");
                 dog.getSpeed().toggleXDirection();
             }
 
             // check collision with bottom wall if heading down
             else if (dog.getSpeed().getyDirection() == Speed.DIRECTION_DOWN
                     && dog.getY() + dog.getBitmap().getHeight() / 2 >= getHeight()) {
-                Log.d(TAG, "DOWN Y: " + dog.getY()+ "  X: " + dog.getX());
+                //Log.d(TAG, "DOWN Y: " + dog.getY()+ "  X: " + dog.getX());
                 dog.getSpeed().toggleYDirection();
             }
             // check collision with top wall if heading up
             else if (dog.getSpeed().getyDirection() == Speed.DIRECTION_UP
                     && dog.getY() - (dog.getBitmap().getHeight()/2)  <= nest.getY() + nest.getBitmap().getHeight()/2) {
-                Log.d(TAG, "UP Y: " + dog.getY()+ "  X: " + dog.getX());
+                //Log.d(TAG, "UP Y: " + dog.getY()+ "  X: " + dog.getX());
                 dog.getSpeed().toggleYDirection();
             }
             // Update the lone droid
