@@ -71,7 +71,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
         nest = new Nest(BitmapFactory.decodeResource(getResources(), R.drawable.rainbow),
                 ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getWidth()/2, 150);
 
-        dog = new Dog(BitmapFactory.decodeResource(getResources(), R.drawable.lion), 250,350);
+        dog = new Dog(BitmapFactory.decodeResource(getResources(), R.drawable.lion), ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getWidth()/2,350);
 
         dogs = new ArrayList<Dog>();
         dogs.add(dog);
@@ -157,6 +157,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
         nest.draw(canvas);
 
         duck.draw(canvas);
+
         for(Dog dog: dogs) {
 
             dog.draw(canvas);
@@ -175,7 +176,6 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
             if (event.getY() > getHeight() - 50) {
                 finishGame();
             } else {
-                Log.d(TAG, "Coords: x=" + event.getX() + ",y=" + event.getY());
             }
         } if (event.getAction() == MotionEvent.ACTION_MOVE) {
             // the gestures
@@ -237,26 +237,37 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
     }
 
     public void updateDogs() {
-        for(Dog dog: dogs){
 
-            // check collision with right wall if heading right
-            if (dog.getSpeed().getxDirection() == Speed.DIRECTION_RIGHT
-                    && dog.getX() + dog.getBitmap().getWidth() / 2 >= getWidth()) {
-                dog.getSpeed().toggleXDirection();
-            }
+        for(Dog dog: dogs){
+            Log.d("COORDINATE: " , " X: " + dog.getX() + " Y: " + dog.getY() +
+                    " ---- DIF: " + (dog.getX() - dog.getBitmap().getWidth() / 2) +
+                            "DIRECTION: " + dog.getSpeed().getxDirection() +
+                            "DOVEL ::" + dog.getSpeed().getXv()
+
+            );
             // check collision with left wall if heading left
             if (dog.getSpeed().getxDirection() == Speed.DIRECTION_LEFT
                     && dog.getX() - dog.getBitmap().getWidth() / 2 <= 0) {
+                Log.d(TAG, "LEFT");
                 dog.getSpeed().toggleXDirection();
             }
+            // check collision with right wall if heading right
+            else if (dog.getSpeed().getxDirection() == Speed.DIRECTION_RIGHT
+                    && dog.getX() + dog.getBitmap().getWidth() / 2 >= getWidth()) {
+                Log.d(TAG, "RIGHT");
+                dog.getSpeed().toggleXDirection();
+            }
+
             // check collision with bottom wall if heading down
-            if (dog.getSpeed().getyDirection() == Speed.DIRECTION_DOWN
+            else if (dog.getSpeed().getyDirection() == Speed.DIRECTION_DOWN
                     && dog.getY() + dog.getBitmap().getHeight() / 2 >= getHeight()) {
+                Log.d(TAG, "DOWN Y: " + dog.getY()+ "  X: " + dog.getX());
                 dog.getSpeed().toggleYDirection();
             }
             // check collision with top wall if heading up
-            if (dog.getSpeed().getyDirection() == Speed.DIRECTION_UP
+            else if (dog.getSpeed().getyDirection() == Speed.DIRECTION_UP
                     && dog.getY() - (dog.getBitmap().getHeight()/2)  <= nest.getY() + nest.getBitmap().getHeight()/2) {
+                Log.d(TAG, "UP Y: " + dog.getY()+ "  X: " + dog.getX());
                 dog.getSpeed().toggleYDirection();
             }
             // Update the lone droid

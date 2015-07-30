@@ -12,8 +12,8 @@ public class Speed {
     private float xv = 1;	// velocity value on the X axis
     private float yv = 1;	// velocity value on the Y axis
 
-    private int xDirection = DIRECTION_RIGHT;
-    private int yDirection = DIRECTION_DOWN;
+    private int xDirection =-1;
+    private int yDirection;
 
     public Speed() {
         //speed of the bitmap
@@ -22,8 +22,31 @@ public class Speed {
     }
 
     public Speed(float xv, float yv) {
-        this.xv = xv;
+
         this.yv = yv;
+      //  Log.d("DOG::::" ,"VEL: "+  xv);
+        if(xv < 0 ){
+         //   Log.d("XV: ", "negativo");
+            this.xv = xv*-1;
+            xDirection = DIRECTION_LEFT;
+        }
+        else{
+          //  Log.d("XV: ", "pos");
+            this.xv = xv;
+            xDirection = DIRECTION_RIGHT;
+        }
+        if(yv < 0 ){
+         //   Log.d("yV: ", "y negativo");
+            this.yv = yv*-1;
+            yDirection = DIRECTION_UP;
+        }
+        else{
+         //   Log.d("yV: ", " y pos");
+            this.yv = yv;
+            yDirection = DIRECTION_DOWN;
+        }
+
+
     }
 
     public float getXv() {
@@ -40,6 +63,7 @@ public class Speed {
     }
 
     public int getxDirection() {
+
         return xDirection;
     }
     public void setxDirection(int xDirection) {

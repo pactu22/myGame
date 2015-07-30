@@ -28,13 +28,14 @@ public class Dog {
         this.y = y;
         rectangle = new Rect(getLeftX(), getTopY(),getRightX(), getBottomY());
 
-        int range = (8 - 2) + 1;
+        int rangeX = (8  - (- 8) + 1);
 
-        int randomX = (int)(Math.random() * range) + 2;
-        int randomY = (int)(Math.random() * range) + 2;
-       // Log.d(TAG, "Random x: " + randomX);
-        //Log.d(TAG, "Random y: " + randomY);
+
+        int randomX = (int)(Math.random() * rangeX) -8;
+        int randomY = (int)(Math.random() * 8);
+        //Log.d(TAG, "Dog: Random x: " + randomX + "Random y: " + randomY);
         speed = new Speed(randomX,randomY);
+        //if (randomX < 0) speed.setxDirection(-1);
     }
 
     private int getTopY(){
@@ -81,19 +82,6 @@ public class Dog {
         rectangle = new Rect(getLeftX(), getTopY(),getRightX(), getBottomY());
     }
 
-    public void handleActionDown(int eventX, int eventY) {
-        if (eventX >= (x - bitmap.getWidth() / 2) && (eventX <= (x + bitmap.getWidth()/2))) {
-            if (eventY >= (y - bitmap.getHeight() / 2) && (y <= (y + bitmap.getHeight() / 2))) {
-                // droid touched
-                setTouched(true);
-            } else {
-                setTouched(false);
-            }
-        } else {
-            setTouched(false);
-        }
-
-    }
 
     public Speed getSpeed() {
         return speed;
@@ -101,6 +89,8 @@ public class Dog {
     public void update() {
         if (!touched) {
             x += (speed.getXv() * speed.getxDirection());
+          //  Log.d("SPEED XV: " , String.valueOf(speed.getXv()) );
+            //Log.d("DIRECTI XV: " , String.valueOf(speed.getxDirection()) );
             y += (speed.getYv() * speed.getyDirection());
             rectangle = new Rect(getLeftX(), getTopY(),getRightX(), getBottomY());
         }
