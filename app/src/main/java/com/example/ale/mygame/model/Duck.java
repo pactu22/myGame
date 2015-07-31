@@ -70,21 +70,6 @@ public class Duck {
     public void draw(Canvas canvas) {
         rectangle = new Rect(getLeftX(), getTopY(),getRightX(), getBottomY());
         canvas.drawBitmap(bitmap, x - (bitmap.getWidth() / 2), y - (bitmap.getHeight() / 2), null);
-
-    }
-
-    public void handleActionDown(int eventX, int eventY) {
-        if (eventX >= (x - bitmap.getWidth() / 2) && (eventX <= (x + bitmap.getWidth()/2))) {
-            if (eventY >= (y - bitmap.getHeight() / 2) && (y <= (y + bitmap.getHeight() / 2))) {
-                // droid touched
-                setTouched(true);
-            } else {
-                setTouched(false);
-            }
-        } else {
-            setTouched(false);
-        }
-
     }
 
     public Speed getSpeed() {
@@ -99,5 +84,9 @@ public class Duck {
 
     public Rect getRectangle(){
         return rectangle;
+    }
+
+    public void setRectangle(Rect rectangle) {
+        this.rectangle = rectangle;
     }
 }

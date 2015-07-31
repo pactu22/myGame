@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -19,6 +20,7 @@ import android.view.WindowManager;
 import com.example.ale.mygame.components.Speed;
 import com.example.ale.mygame.model.Dog;
 import com.example.ale.mygame.model.Duck;
+import com.example.ale.mygame.model.Level;
 import com.example.ale.mygame.model.Nest;
 
 import java.util.ArrayList;
@@ -30,14 +32,22 @@ import java.util.List;
 public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback {
 
     private static final String TAG = DrawingPanel.class.getSimpleName();
+
+
     private MainThread thread;
     private Duck duck;
     private Nest nest;
     private Dog dog;
     private List<Dog> dogs;
 
+    public void setLevel(Level level) {
+        this.level = level;
+        Log.d("nIVEL: " , String.valueOf(level.getNumberObstacles()));
+    }
 
-    private final float FACTOR_BOUNCEBACK = 0.50f;
+    private Level level;
+
+    private final float FACTOR_BOUNCEBACK = 0.40f;
     private float mVx;
     private float mVy;
     private int mXCenter;
@@ -52,12 +62,13 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
 
     private DroidzActivity ma;
 
-    public DrawingPanel(Context context) {
+    public DrawingPanel(Context context, Level level) {
         super(context);
         // adding the callback (this) to the surface holder to intercept events
         getHolder().addCallback(this);
 
-
+        Log.d("nIVEL: " , String.valueOf(level.getNumberObstacles()));
+        this.level = level;
         WindowManager mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 
         // make the GamePanel focusable so it can handle events
@@ -66,22 +77,26 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
         // create the imges
         int heightScreen = ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getHeight();
         int widthScreen = ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getWidth();
-        Log.d("HEIGHT: " , String.valueOf(heightScreen));
+
         duck = new Duck(BitmapFactory.decodeResource(getResources(), R.drawable.penguin1),
                 widthScreen/2,
-                1200);
-        Log.d("Y: " , String.valueOf(duck.getY()));
+                heightScreen-60);
+        Log.d("POSISCION Y: " , String.valueOf(duck.getY()));
         //duck.setY(heightScreen-duck.getBitmap().getHeight()-100);
 
         nest = new Nest(BitmapFactory.decodeResource(getResources(), R.drawable.rainbow),
                 widthScreen/2, 150);
 
-        dog = new Dog(BitmapFactory.decodeResource(getResources(), R.drawable.bomb), widthScreen/2,350);
+        mXCenter = duck.getX()/2;
+        mYCenter = duck.getY()-(duck.getBitmap().getHeight()/2);
+
+       // dog = new Dog(BitmapFactory.decodeResource(getResources(), R.drawable.bomb), widthScreen/2,350);
 
         dogs = new ArrayList<Dog>();
-        dogs.add(dog);
-
-        for(int i = 1; i <= 2; ++i){
+        //dogs.add(dog);
+      //  dog = new Dog(BitmapFactory.decodeResource(getResources(), R.drawable.duck1), 500,heightScreen-60);
+        //dogs.add(dog);
+        for(int i = 1; i <= level.getNumberObstacles(); ++i){
             dog = new Dog(BitmapFactory.decodeResource(getResources(), R.drawable.bomb), 250,350);
             dogs.add(dog);
         }
@@ -95,10 +110,13 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
 
         mVx -= ma.getmAx() * ma.getmDeltaT();
         mVy += ma.getmAy() * ma.getmDeltaT();
-
+        Log.d("MXCENTER: " , String.valueOf(mXCenter));
+        Log.d("MYCENTR: " , String.valueOf(mYCenter));
         mXCenter += (int)(ma.getmDeltaT() * (mVx + 0.5 * ma.getmAx() * ma.getmDeltaT()));
         mYCenter += (int)(ma.getmDeltaT()* (mVy + 0.5 * ma.getmAy() * ma.getmDeltaT()));
 
+       // mXCenter = duck.getX()/2;
+        //mYCenter = duck.getY()/2;
         if(mXCenter < RADIUS)
         {
             mXCenter = RADIUS;
@@ -136,6 +154,19 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
     }
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            // delegating event handling to the droid
+
+            // check if in the lower part of the screen we exit
+            if (event.getY() > getHeight() - 50) {
+                finishGame();
+            }
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
@@ -154,13 +185,17 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
     protected void onDraw(Canvas canvas) {
 
         // fills the canvas with black
-        canvas.drawColor(Color.BLACK);
+      canvas.drawColor(Color.BLACK);
+
+        //canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.back), 0, 0, null);
 
         //draws the duck image to the coordinates 10,10
-        //canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.nido), 10, 10, null);
+
 
         nest.draw(canvas);
-
+        if(duck.getRectangle() != null){
+            duck.setRectangle(new Rect(mXCenter - RADIUS, mYCenter - RADIUS, mXCenter + RADIUS, mYCenter + RADIUS));
+        }
         duck.draw(canvas);
 
         for(Dog dog: dogs) {
@@ -168,34 +203,6 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
             dog.draw(canvas);
         }
 
-    }
-
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            // delegating event handling to the droid
-            duck.handleActionDown((int)event.getX(), (int)event.getY());
-
-            // check if in the lower part of the screen we exit
-            if (event.getY() > getHeight() - 50) {
-                finishGame();
-            } else {
-            }
-        } if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            // the gestures
-            if (duck.isTouched()) {
-                // the droid was picked up and is being dragged
-                duck.setX((int)event.getX());
-                duck.setY((int)event.getY());
-            }
-        } if (event.getAction() == MotionEvent.ACTION_UP) {
-            // touch was released
-            if (duck.isTouched()) {
-                duck.setTouched(false);
-            }
-        }
-        return true;
     }
 
     public void checkCollision(){
@@ -208,6 +215,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
             if (duck.getRectangle().intersect(dog.getRectangle())) {
                 collisionMsg(true);
             }
+
         }
     }
 
@@ -244,13 +252,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
     public void updateDogs() {
 
         for(Dog dog: dogs){
-           /*
-            Log.d("COORDINATE: " , " X: " + dog.getX() + " Y: " + dog.getY() +
-                    " ---- DIF: " + (dog.getX() - dog.getBitmap().getWidth() / 2) +
-                            "DIRECTION: " + dog.getSpeed().getxDirection() +
-                            "DOVEL ::" + dog.getSpeed().getXv()
 
-            );*/
             // check collision with left wall if heading left
             if (dog.getSpeed().getxDirection() == Speed.DIRECTION_LEFT
                     && dog.getX() - dog.getBitmap().getWidth() / 2 <= 0) {
@@ -263,7 +265,6 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
                 //Log.d(TAG, "RIGHT");
                 dog.getSpeed().toggleXDirection();
             }
-
             // check collision with bottom wall if heading down
             else if (dog.getSpeed().getyDirection() == Speed.DIRECTION_DOWN
                     && dog.getY() + dog.getBitmap().getHeight() / 2 >= getHeight()) {
@@ -282,11 +283,31 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
     }
 
     public void updateDuck(){
-
         duck.setX(mXCenter);
         duck.setY(mYCenter);
     }
 
+
+    private void collisionMsg(final boolean lost){
+        thread.setRunning(false);
+        final Message msg = new Message();
+
+        new Thread()
+        {
+            public void run()
+            {
+                if(lost){
+                    msg.arg1=1;
+
+                }
+                else{
+                    msg.arg1=2;
+                }
+                handler.sendMessage(msg);
+
+            }
+        }.start();
+    }
     public void open(boolean won){
         String msg, title = null;
         if(won) {
@@ -308,6 +329,7 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
             public void onClick(DialogInterface arg0, int arg1) {
                 finishGame();
                 Intent intentGame = new Intent(getContext(), DroidzActivity.class);
+                intentGame.putExtra("level", level.getNumberObstacles());
                 getContext().startActivity(intentGame);
             }
         });
@@ -338,27 +360,10 @@ public class DrawingPanel extends SurfaceView implements SurfaceHolder.Callback 
             return false;
         }
     });
-    private void collisionMsg(final boolean lost){
-        thread.setRunning(false);
-        final Message msg = new Message();
 
-        new Thread()
-        {
-            public void run()
-            {
-                if(lost){
-                    msg.arg1=1;
-                    handler.sendMessage(msg);
-                }
-                else{
-                    msg.arg1=2;
-                    handler.sendMessage(msg);
-                }
-
-            }
-        }.start();
+    public MainThread getThread() {
+        return thread;
     }
-
 
 
 }

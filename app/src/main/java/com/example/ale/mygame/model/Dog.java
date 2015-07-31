@@ -98,4 +98,15 @@ public class Dog {
     public Rect getRectangle(){
         return rectangle;
     }
+
+    @Override
+    public int hashCode() {
+        return x*y;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        Dog d = (Dog) o;
+        return (this.bitmap.equals(d.getBitmap()) && this.x == d.getX() && this.y == d.getY() );
+    }
 }

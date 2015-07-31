@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -16,6 +15,8 @@ import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
+
+import com.example.ale.mygame.model.Level;
 
 public class DroidzActivity extends Activity implements SensorEventListener {
     /** Called when the activity is first created. */
@@ -34,12 +35,13 @@ public class DroidzActivity extends Activity implements SensorEventListener {
     private int mHeightScreen;
 
     // motion parameters
-    private final float FACTOR_FRICTION = 0.5f; // imaginary friction on the screen
+    private final float FACTOR_FRICTION = 0.4f; // imaginary friction on the screen
     private final float GRAVITY = 9.8f; // acceleration of gravity
     private float mAx; // acceleration along x axis
 
     private float mAy; // acceleration along y axis
-    private final float mDeltaT = 0.5f; // imaginary time interval between each acceleration updates
+    private final float mDeltaT = 0.3f; // imaginary time interval between each acceleration updates
+    private int level = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,7 +64,10 @@ public class DroidzActivity extends Activity implements SensorEventListener {
         // requesting to turn the title OFF
         // making it full screen
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        dp = new DrawingPanel(this);
+
+
+       level++;
+        dp = new DrawingPanel(this, new Level("Level", level));
         dp.setDa(this);
         // set our MainGamePanel as the View
         setContentView(dp);
@@ -100,7 +105,7 @@ public class DroidzActivity extends Activity implements SensorEventListener {
     @Override
     protected void onRestart() {
         super.onRestart();
-        dp = new DrawingPanel(this);
+        dp = new DrawingPanel(this,new Level("Level", 1));
         dp.setDa(this);
         // set our MainGamePanel as the View
         setContentView(dp);
@@ -126,9 +131,10 @@ public class DroidzActivity extends Activity implements SensorEventListener {
         alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface arg0, int arg1) {
+                dp.getThread().setRunning(false);
 
-                Intent intentGame = new Intent(getBaseContext(), MainActivity.class);
-                startActivity(intentGame);
+                finish();
+
             }
         });
 
@@ -152,8 +158,10 @@ public class DroidzActivity extends Activity implements SensorEventListener {
         float mAz = event.values[2];
 
         // taking into account the frictions
-        mAx = Math.signum(mAx) * Math.abs(mAx) * (1 - FACTOR_FRICTION * Math.abs(mAz) / GRAVITY);
-        mAy = Math.signum(mAy) * Math.abs(mAy) * (1 - FACTOR_FRICTION * Math.abs(mAz) / GRAVITY);
+       // mAx = Math.signum(mAx) * Math.abs(mAx) * (1 - FACTOR_FRICTION * Math.abs(mAz) / GRAVITY);
+        //mAy = Math.signum(mAy) * Math.abs(mAy) * (1 - FACTOR_FRICTION * Math.abs(mAz) / GRAVITY);
+        //Log.d("ACCELERATION X: " , String.valueOf(mAx));
+      //  Log.d("ACCELERATION Y: " , String.valueOf(mAy));
     }
 
     @Override

@@ -12,13 +12,11 @@ public class Speed {
     private float xv = 1;	// velocity value on the X axis
     private float yv = 1;	// velocity value on the Y axis
 
-    private int xDirection =-1;
+    private int xDirection;
     private int yDirection;
 
     public Speed() {
         //speed of the bitmap
-        this.xv = 1;
-        this.yv = 1;
     }
 
     public Speed(float xv, float yv) {
@@ -45,8 +43,6 @@ public class Speed {
             this.yv = yv;
             yDirection = DIRECTION_DOWN;
         }
-
-
     }
 
     public float getXv() {
